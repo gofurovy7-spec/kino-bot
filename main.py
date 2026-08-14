@@ -171,22 +171,21 @@ async def send_movie(msg, code, uid, edit=False):
         return
     caption = movie_caption(m)
     kb      = movie_kb(m, uid)
-    if m[3]:  # poster bor
+    # m[3]=file_id, m[4]=poster_id
+    if m[4]:  # poster bor - avval yuborish
         try:
-            await msg.answer_photo(photo=m[3], caption=caption, reply_markup=kb)
-            await bot.send_document(msg.chat.id, document=m[4],
-                                    caption=f"🎬 <b>{m[1]}</b> — yuklab olish")
-            return
+            await msg.answer_photo(photo=m[4], caption=caption, reply_markup=kb)
         except Exception:
             pass
-    # fayl yuborish
+    # video/fayl yuborish
     try:
-        await msg.answer_video(m[4], caption=caption, reply_markup=kb)
+        await bot.send_video(msg.chat.id, video=m[3], caption=f"🎬 <b>{m[1]}</b>")
     except Exception:
         try:
-            await msg.answer_document(m[4], caption=caption, reply_markup=kb)
+            await bot.send_document(msg.chat.id, document=m[3], caption=f"🎬 <b>{m[1]}</b>")
         except Exception:
-            await msg.answer(caption + f"\n\n🔗 {m[4]}", reply_markup=kb)
+            if not m[4]:
+                await msg.answer(caption, reply_markup=kb)
 
 # ── Admin: qo'shish ───────────────────────────────────────
 @dp.message(F.text.in_(["➕ Kino qo'shish", "➕ Serial qo'shish"]))
